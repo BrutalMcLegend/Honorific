@@ -595,6 +595,47 @@ public class ConfigWindow : Window {
                                 ImGui.Text("Enable, Disable, or Toggle a title on the current character.");
                             }
                         }
+
+                        if (ImGui.CollapsingHeader("Edit Titles (Set Style)", ImGuiTreeNodeFlags.DefaultOpen)) {
+                            using (ImRaii.PushIndent()) {
+                        
+                                using (ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, Vector2.Zero)) {
+                                    ImGui.TextColored(ImGuiColors.DalamudWhite2, "/honorific title set");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.DalamudViolet, " <title|uid|meta:default>");
+                                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("Target title to edit.\n- Title text search\n- Unique ID (uid:...)\n- meta:default to edit the Default Title");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.DalamudWhite2, " | ");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.ParsedPink, "[prefix|suffix]");
+                                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("(Optional) Sets prefix/suffix position.");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.DalamudWhite2, " | ");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.ParsedPink, "#<HexColor>");
+                                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("(Optional) #RRGGBB main title colour.");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.DalamudWhite2, " | ");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.ParsedPink, "#<HexGlow>");
+                                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("(Optional) #RRGGBB glow colour.\nOnly meaningful when not using a gradient preset.");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.DalamudWhite2, " | ");
+                                    ImGui.SameLine();
+                                    ImGui.TextColored(ImGuiColors.ParsedPink, "+<set>[/<Wave|Pulse|Static>]");
+                                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("(Optional) Gradient preset.\nExample: +3/wave");
+                                }
+                        
+                                ImGui.Spacing();
+                                ImGui.Text("Edits the style of an existing configured title (or the Default Title).");
+                        
+                                ImGui.Spacing();
+                                ImGui.TextDisabled("Examples:");
+                                ImGui.BulletText("/honorific title set meta:default | +3/wave");
+                                ImGui.BulletText("/honorific title set meta:default | prefix | #ff4fae | #101118");
+                                ImGui.BulletText("/honorific title set uid:abc123 | +2/pulse");
+                            }
+                        }
                         
                         if (ImGui.CollapsingHeader("Forced Titles", ImGuiTreeNodeFlags.DefaultOpen)) {
                             using (ImRaii.PushIndent()) {

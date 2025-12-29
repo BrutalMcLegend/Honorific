@@ -1,0 +1,19 @@
+[
+  {
+    "Author": "Nocturne",
+    "Name": "Honorific (Shadow Test Fork)",
+    "Punchline": "Private testing fork of Honorific.",
+    "Description": "Testing fork to validate /honorific title set animation support before PR.",
+    "Tags": ["UI", "Titles", "QoL", "Testing"],
+    "InternalName": "Honorific",
+    "AssemblyVersion": "0.0.1.0",
+    "RepoUrl": "https://github.com/BrutalMcLegend/Honorific/tree/testing",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 14,
+    "IsHide": "False",
+    "IsTestingExclusive": "False",
+    "DownloadLinkInstall": "https://github.com/<you>/<your-fork>/releases/download/<tag>/Honorific-ShadowTest.zip",
+    "DownloadLinkUpdate": "https://github.com/<you>/<your-fork>/releases/download/<tag>/Honorific-ShadowTest.zip",
+    "IconUrl": "https://raw.githubusercontent.com/<you>/<your-fork>/<branch>/icon.png"
+  }
+]

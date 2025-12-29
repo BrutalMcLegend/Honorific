@@ -304,6 +304,106 @@ public unsafe class Plugin : IDalamudPlugin {
 
                         PluginService.Chat.Print(message.Build(), Name);
                     }
+
+                    // --- NEW: /honorific title set <target> | [prefix|suffix] | #RRGGBB | #RRGGBB | +<set>[/<style>] | <wave|pulse|static> | silent
+                    if (splitArgs.Length >= 2 && splitArgs[1].Equals("set", StringComparison.InvariantCultureIgnoreCase)) {
+                    
+                        if (splitArgs.Length != 3) {
+                            // You can make a HelpTitleSet() similar to HelpToggle() if you like
+                            PluginService.Chat.PrintError("Usage: /honorific title set <target> | [prefix|suffix] | #RRGGBB | #RRGGBB | +<set>[/<style>] | <wave|pulse|static>", Name);
+                            return;
+                        }
+                    
+                        var setArgs = splitArgs[2].Split('|', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                        if (setArgs.Length == 0) {
+                            PluginService.Chat.PrintError("Missing target. First segment must be a configured title search (text, uid, or meta:default).", Name);
+                            return;
+                        }
+                    
+                        var target = setArgs[0];
+                        var titles = characterConfig.GetTitlesBySearchString(target);
+                        if (titles.Count == 0) {
+                            PluginService.Chat.PrintError($"'{target}' is not setup on this character.", Name);
+                            return;
+                        }
+                    
+                        bool? prefix = null;
+                        Vector3? color = null;
+                        Vector3? glow = null;
+                        int? gradientColourSet = null;
+                        GradientAnimationStyle? gradientAnimationStyle = null;
+                        var silent = false;
+                    
+                        // Parse remaining segments
+                        for (var i = 1; i < setArgs.Length; i++) {
+                            var a = setArgs[i];
+                            var arg = a.ToLowerInvariant();
+                    
+                            // gradient preset: +<set>[/<style>]
+                            if (arg.StartsWith('+')) {
+                                var s = arg[1..].Split('/', 2);
+                                if (int.TryParse(s[0], out var c)) {
+                                    gradientColourSet = c;
+                                    if (s.Length == 2 && Enum.TryParse(s[1], true, out GradientAnimationStyle style)) {
+                                        gradientAnimationStyle = style;
+                                    }
+                                    continue;
+                                }
+                    
+                                PluginService.Chat.PrintError($"Invalid gradient option: '{a}'", Name);
+                                return;
+                            }
+                    
+                            // animation style word (works standalone too)
+                            if (Enum.TryParse(arg, true, out GradientAnimationStyle parsedAnim)) {
+                                gradientAnimationStyle = parsedAnim;
+                                continue;
+                            }
+                    
+                            if (arg is "p" or "prefix" or "pre") { prefix = true; continue; }
+                            if (arg is "s" or "suffix")          { prefix = false; continue; }
+                            if (arg is "silent")                 { silent = true; continue; }
+                    
+                            // hex colour (same rules as force set)
+                            var colorArg = arg.Skip(arg.StartsWith('#') ? 1 : 0).ToArray();
+                            if (colorArg.Length == 6 && colorArg.All(chr => chr is >= '0' and <= '9' or >= 'a' and <= 'f')) {
+                                var rHex = string.Join(null, colorArg.Skip(0).Take(2));
+                                var gHex = string.Join(null, colorArg.Skip(2).Take(2));
+                                var bHex = string.Join(null, colorArg.Skip(4).Take(2));
+                    
+                                if (byte.TryParse(rHex, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var r) &&
+                                    byte.TryParse(gHex, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var g) &&
+                                    byte.TryParse(bHex, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo, out var b)) {
+                    
+                                    var c = new Vector3(r / 255f, g / 255f, b / 255f);
+                                    if (color == null) { color = c; continue; }
+                                    glow = c; continue;
+                                }
+                            }
+                    
+                            PluginService.Chat.PrintError($"Invalid option: '{a}'", Name);
+                            return;
+                        }
+                    
+                        // Apply to all matched titles (mirrors toggle behavior)
+                        foreach (var t in titles) {
+                            if (prefix != null) t.IsPrefix = prefix.Value;
+                            t.Color = color;
+                            t.Glow = glow;
+                    
+                            // Gradient settings (only touched if provided)
+                            if (gradientColourSet != null) t.GradientColourSet = gradientColourSet;
+                            if (gradientAnimationStyle != null) t.GradientAnimationStyle = gradientAnimationStyle;
+                    
+                            t.UpdateWarning();
+                        }
+                    
+                        if (!silent) {
+                            PluginService.Chat.Print($"Updated {titles.Count} title(s).", Name);
+                        }
+                    
+                        return;
+                    }
                     
                     return;
                 }
