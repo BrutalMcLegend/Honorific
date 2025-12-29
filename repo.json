@@ -7,7 +7,7 @@
     "Tags": ["UI", "Titles", "QoL", "Testing"],
     "InternalName": "Honorific",
     "AssemblyVersion": "0.0.1.0",
-    "RepoUrl": "https://github.com/<you>/<your-fork>",
+    "RepoUrl": "https://github.com/BrutalMcLegend/Honorific/tree/testing",
     "ApplicableVersion": "any",
     "DalamudApiLevel": 14,
     "IsHide": "False",
